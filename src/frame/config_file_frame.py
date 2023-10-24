@@ -6,11 +6,11 @@ from PIL import Image, ImageTk
 
 class ConfigFileFrame:
 
-    def __init__(self, frame_image):
+    def __init__(self, frame_image, label_original_image):
         self.frame_image = frame_image
         self.image_path = None
         self.original_image = None
-        self.label_original_image = None
+        self.label_original_image = label_original_image
 
     # Abre a tela para seleção do arquivo
     def open_file(self):

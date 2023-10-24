@@ -17,6 +17,7 @@ class ConfigFrame:
         self.button_view_kmeans_result_images = None
 
         self.frame_image = None
+        self.label_original_image = None
 
         self.var_dimensions = None
         self.var_clusters = None
@@ -79,9 +80,11 @@ class ConfigFrame:
         self.dropdown_button_cluster.pack(side="left", padx=10)
 
     def open_file(self):
-        config_file_frame = ConfigFileFrame(self.frame_image)
-
+        config_file_frame = ConfigFileFrame(self.frame_image, self.label_original_image)
         config_file_frame.open_file()
+
+        self.label_original_image = config_file_frame.label_original_image
+
         self.kmeansViewAndGenerate = KmeansViewAndGenerate(config_file_frame.original_image, self.var_dimensions,
                                                            self.var_clusters)
 
