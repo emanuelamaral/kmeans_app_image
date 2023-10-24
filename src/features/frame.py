@@ -86,23 +86,18 @@ class KmeansAppFrame:
         image_files = os.listdir(saved_images_dir)
         image_files = [os.path.join(saved_images_dir, file) for file in image_files if file.endswith('.jpg')]
 
-        num_images = len(image_files)
+        for image_file in image_files:
+            # Lê a imagem usando OpenCV
+            image = cv2.imread(image_file)
 
-        # Ajustar o tamanho das imagens dentro dos subplots
-        fig, axes = plt.subplots(1, num_images, figsize=(12, 3))  # Ajuste o tamanho conforme necessário
+            if image is not None:
+                # Exibe a imagem em uma janela com o nome do arquivo
+                cv2.namedWindow(os.path.basename(image_file), cv2.WINDOW_NORMAL)
+                cv2.imshow(os.path.basename(image_file), image)
 
-        for i, image_file in enumerate(image_files):
-            img = cv2.imread(image_file)
-
-            # Ajustar o tamanho da imagem dentro do subplot
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            img = cv2.resize(img, (500, 500))  # Ajuste o tamanho conforme necessário
-
-            axes[i].imshow(img)
-            axes[i].set_title(f'K = {i + 1}')
-            axes[i].axis('off')
-
-        plt.show()
+            # Aguarda até que uma tecla seja pressionada e, em seguida, fecha todas as janelas
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
     def generate_kmeans(self):
         GeneratedKmeans(self.original_image, self.var_dimensions.get(), self.var_clusters.get())
