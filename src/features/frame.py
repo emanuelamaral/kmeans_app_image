@@ -1,7 +1,10 @@
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
+from tkinter import filedialog
 import cv2
 from PIL import Image, ImageTk
+from kmeans import GeneratedKmeans
+import os
+import matplotlib.pyplot as plt
 
 
 class KmeansAppFrame:
@@ -17,10 +20,15 @@ class KmeansAppFrame:
         self.button_load_image = None
         self.dropdown_button_cluster = None
         self.dropdown_button_dimension = None
+        self.button_generate_kmeans_button = None
+        self.button_view_kmeans_result_images = None
 
         self.image_path = None
         self.original_image = None
         self.label_original_image = None
+
+        self.var_dimensions = None
+        self.var_clusters = None
 
         self.config_frame()
 
@@ -40,32 +48,64 @@ class KmeansAppFrame:
         self.bottons_frame_buttons.pack(side="bottom", pady=10)
 
         self.button_load_image = tk.Button(self.bottons_frame_buttons, text="Carregar imagem", command=self.open_file)
-        self.button_load_image.pack(side="top", padx=10)
+        self.button_load_image.pack(side="left", padx=10)
+
+        self.button_generate_kmeans_button = tk.Button(self.bottons_frame_buttons, text="Gerar Kmeans", command=self.generate_kmeans)
+        self.button_generate_kmeans_button.pack(side="left", padx=10)
+
+        self.button_view_kmeans_result_images = tk.Button(self.bottons_frame_buttons, text="Visualizar Kmeans", command=self.kmeans_view)
+        self.button_view_kmeans_result_images.pack(side="left", padx=10)
 
     def config_top_frame_buttons(self):
         self.top_frame_buttons = tk.Frame(self.master)
         self.top_frame_buttons.pack(side="top", pady=10)
 
         clusters = ["K = 1", "K = 2", "K = 3", "K = 4", "K = 5", "K = 6", "K = 7", "K = 8", "K = 9", "K = 10"]
-        image_dimensions = ["D = 1", "D = 2", "D = 3", "D = 4", "D = 5", "D = 6", "D = 7", "D = 8", "D = 9", "D = 10"]
+        image_dimensions = ["D = 1", "D = 2", "D = 3"]
 
         label_dimensions = tk.Label(self.top_frame_buttons, text="Selecionar dimensão da imagem:")
         label_dimensions.pack(side="left")
 
-        var_dimensions = tk.StringVar(self.master)
-        var_dimensions.set("D = 4")
+        self.var_dimensions = tk.StringVar(self.master)
+        self.var_dimensions.set("D = 3")
 
-        self.dropdown_button_dimension = tk.OptionMenu(self.top_frame_buttons, var_dimensions, *image_dimensions)
+        self.dropdown_button_dimension = tk.OptionMenu(self.top_frame_buttons, self.var_dimensions, *image_dimensions)
         self.dropdown_button_dimension.pack(side="left", padx=10)
 
         label_clusters = tk.Label(self.top_frame_buttons, text="Selecionar K:")
         label_clusters.pack(side="left")
 
-        var_clusters = tk.StringVar(self.master)
-        var_clusters.set("K = 4")
+        self.var_clusters = tk.StringVar(self.master)
+        self.var_clusters.set("K = 4")
 
-        self.dropdown_button_cluster = tk.OptionMenu(self.top_frame_buttons, var_clusters, *clusters)
+        self.dropdown_button_cluster = tk.OptionMenu(self.top_frame_buttons, self.var_clusters, *clusters)
         self.dropdown_button_cluster.pack(side="left", padx=10)
+
+    def kmeans_view(self):
+        saved_images_dir = '../images/saved_images/'
+        image_files = os.listdir(saved_images_dir)
+        image_files = [os.path.join(saved_images_dir, file) for file in image_files if file.endswith('.jpg')]
+
+        num_images = len(image_files)
+
+        # Ajustar o tamanho das imagens dentro dos subplots
+        fig, axes = plt.subplots(1, num_images, figsize=(12, 3))  # Ajuste o tamanho conforme necessário
+
+        for i, image_file in enumerate(image_files):
+            img = cv2.imread(image_file)
+
+            # Ajustar o tamanho da imagem dentro do subplot
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            img = cv2.resize(img, (500, 500))  # Ajuste o tamanho conforme necessário
+
+            axes[i].imshow(img)
+            axes[i].set_title(f'K = {i + 1}')
+            axes[i].axis('off')
+
+        plt.show()
+
+    def generate_kmeans(self):
+        GeneratedKmeans(self.original_image, self.var_dimensions.get(), self.var_clusters.get())
 
     def open_file(self):
         self.image_path = filedialog.askopenfilename()
@@ -100,7 +140,6 @@ class KmeansAppFrame:
         self.frame_image.update_idletasks()
 
     def run(self):
-        cv2.destroyAllWindows()
         self.master.mainloop()
 
 
