@@ -63,8 +63,8 @@ class GeneratedKmeans:
             os.makedirs('../images/saved_images')
 
         for k in range(1, self.K + 1):
-            stop_criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 500, 0.10)
-            _, labels, centers = cv2.kmeans(self.pixels, k, None, stop_criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
+            stopping_criterion = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 100, 0.2)
+            _, labels, centers = cv2.kmeans(self.pixels, k, None, stopping_criterion, 10, cv2.KMEANS_RANDOM_CENTERS)
 
             # Converter os centróides de volta para valores inteiros
             centers = np.uint8(centers)
